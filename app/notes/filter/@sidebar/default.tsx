@@ -1,13 +1,13 @@
-"use client";
+"use client"
 import css from "./SidebarNotes.module.css"
 import { tags } from "./tags.data";
 import Link from "next/link";
 import { useAtom } from "jotai";
 import { isCollapsedAtom } from "./tags.data";
-import { ChessQueen, PanelLeftClose, PanelLeftOpen, User2 } from "lucide-react";
+
 import { motion } from "framer-motion"
 import cn from 'clsx'
-import { Crown } from 'lucide-react';
+import { Crown, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 
 
@@ -29,15 +29,15 @@ const toggleSidebar=()=>{
     <button className={css.toggle} onClick={toggleSidebar}>{isCollapsed ? <PanelLeftOpen size={30}/> : <PanelLeftClose size={30} />}</button>
 <ul className={css.menuList}>
       <li className={css.menuItem}>
-        <Link href={`/notes/filter/all`} className={css.menuLink}>
+ <Link href={`/notes/filter/all`} className={css.menuLink}>
   <span className={css.iconBox}>
       <Crown size={28} />
     </span>
-  {/* < ChessQueen size={30}  />  */}
+
 
           {!isCollapsed && <span>All notes</span>}
-        </Link>
-      </li>
+ </Link>
+</li>
 {tags.map(({icon: Icon,  tag})=>(
     <li key={tag} >
         <Link href={`/notes/filter/${tag}`} className={css.menuLink}>
