@@ -11,32 +11,35 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
 import { fetchNotes } from '@/lib/api';
 import { Toaster } from 'react-hot-toast';
+import { NoteTag } from '@/types/note';
 
-export default function NotesClient() {
-  const [params, setParams] = useState({
-    search: '',
-    page: 1,
-  });
+interface NoteClientProps{
+  category:NoteTag | undefined
+}
 
+export default function NotesClient({category}:NoteClientProps) {
+const [currentPage, setCurrentPage]=useState<number>(1);
+const [searchQuery, setSearchQuery]=useState<string>('')
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   const updateSearchQuery = useDebouncedCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setParams(prev => ({
-        ...prev,
-        search: event.target.value,
-        page: 1,
-      }));
+      setSearchQuery(event.target.value);
+      setCurrentPage(1)
     },
     300
   );
 
   const { data, isLoading, isError, isSuccess } = useQuery({
-    queryKey: ['notes', params.search, params.page],
-    queryFn: () => fetchNotes(params),
+    queryKey: ['notes', {searchQuery:searchQuery, page:currentPage, category: category},],
+    queryFn: () => fetchNotes(searchQuery, currentPage, category),
     placeholderData: keepPreviousData,
     refetchOnMount: false,
   });
+
+
+
+  const totalPages=data?.totalPages ?? 0
 
   const openModal = () => setIsOpenModal(true);
   const closeModal = () => setIsOpenModal(false);
@@ -54,12 +57,12 @@ export default function NotesClient() {
         }}
       />
       <header className={css.toolbar}>
-        <SearchBox value={params.search ?? ''} onChange={updateSearchQuery} />
-        {isSuccess && data?.totalPages && data.totalPages > 1 && (
+        <SearchBox value={searchQuery} onChange={updateSearchQuery} />
+        {isSuccess && totalPages  > 1 && (
           <Pagination
-            totalPages={data.totalPages}
-            currentPage={params.page ?? 1}
-            onPageChange={page => setParams(prev => ({ ...prev, page }))}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         )}
 

@@ -1,16 +1,12 @@
 import axios from 'axios';
 
-import type { Note, NoteFormData } from '@/types/note';
+import type { Note, NoteFormData, NoteTag } from '@/types/note';
 
 const API = 'https://notehub-public.goit.study/api';
 
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
-// Параметри запиту
-export interface FetchNotesParams {
-  page: number;
-  search: string;
-}
+
 
 // Відповідь від сервера
 export interface FetchNotesResponse {
@@ -19,12 +15,13 @@ export interface FetchNotesResponse {
 }
 
 // fetchNotes : має виконувати запит для отримання колекції нотаток із сервера. Повинна підтримувати пагінацію (через параметр сторінки) та фільтрацію за ключовим словом (пошук);
-export const fetchNotes = async ({
-  page,
-  search,
-}: FetchNotesParams): Promise<FetchNotesResponse> => {
+export const fetchNotes = async (
+  
+  search: string,
+  page: number,
+  categoryId?:NoteTag): Promise<FetchNotesResponse> => {
   const res = await axios.get<FetchNotesResponse>(`${API}/notes`, {
-    params: { search: search, page: page, perPage: 12 },
+    params: { search: search, page: page, perPage: 12, tag:categoryId },
     headers: { Authorization: `Bearer ${TOKEN}` },
   });
   return res.data;
